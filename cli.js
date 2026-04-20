@@ -23,7 +23,7 @@ const path = require('path');
 
 const PATTERNS = {
   ipv4: /\b(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\b/g,
-  domain: /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:com|net|org|io|ai|dev|xyz|info|biz|co|me|app|cloud|online|site|tech|ru|cn|ir|kp|de|fr|nl|uk|au|br|jp|kr|sg|il|sa|ae)\b/gi,
+  domain: /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:com|net|org|io|ai|dev|xyz|info|biz|co|me|app|cloud|online|site|tech|ru|cn|ir|kp|de|fr|nl|uk|au|br|jp|kr|sg|il|sa|ae|onion)\b/gi,
   sha256: /\b[a-fA-F0-9]{64}\b/g,
   cve: /CVE-\d{4}-\d{4,7}/gi,
 };
@@ -107,6 +107,9 @@ const USAGE = `
     dugganusa-lookup --stdin                  Scan stdin (pipe-friendly)
     dugganusa-lookup --batch <path>           Batch lookup (one IOC per line)
     dugganusa-lookup --aipm <domain>          AIPM audit URL for a domain
+    dugganusa-lookup --tor-check <ip>         Check if an IP is a known Tor relay
+    dugganusa-lookup --tor-hunt               Show suspicious Tor relays (sorted by score)
+    dugganusa-lookup --tor-stats              Tor network summary statistics
 
   OPTIONS
     --key <api-key>       DugganUSA API key (or set DUGGANUSA_API_KEY env var)
@@ -120,6 +123,9 @@ const USAGE = `
     dugganusa-lookup --file terraform/main.tf --format markdown
     cat /var/log/auth.log | dugganusa-lookup --stdin --quiet
     dugganusa-lookup --aipm crowdstrike.com
+    dugganusa-lookup --tor-check 185.220.101.42
+    dugganusa-lookup --tor-hunt
+    dugganusa-lookup --tor-stats
 
   FREE API KEY
     https://analytics.dugganusa.com/stix/register
@@ -153,6 +159,89 @@ async function main() {
     if (!domain) { console.error('Usage: dugganusa-lookup --aipm <domain>'); process.exit(1); }
     const clean = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^www\./, '');
     console.log('AIPM Audit: https://aipmsec.com/audit.html?domain=' + encodeURIComponent(clean));
+    process.exit(0);
+  }
+
+  // Tor check mode
+  if (args[0] === '--tor-check') {
+    const ip = args[1];
+    if (!ip) { console.error('Usage: dugganusa-lookup --tor-check <ip>'); process.exit(1); }
+    const url = apiUrl + '/tor/relays?q=' + encodeURIComponent(ip) + '&limit=1';
+    const headers = {};
+    if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+    try {
+      const json = await httpGet(url, headers);
+      const relays = json.data?.relays || json.data || [];
+      if (!relays.length) {
+        console.log('\n  ' + ip + ' is NOT a known Tor relay.');
+        process.exit(0);
+      }
+      const r = relays[0];
+      console.log('\n  Tor Relay Found!');
+      console.log('  ─────────────────────────────────────');
+      console.log('  IP:         ' + ip);
+      if (r.nickname) console.log('  Nickname:   ' + r.nickname);
+      if (r.flags) console.log('  Flags:      ' + (Array.isArray(r.flags) ? r.flags.join(', ') : r.flags));
+      if (r.country) console.log('  Country:    ' + r.country);
+      if (r.asn || r.as_name) console.log('  ASN:        ' + (r.asn || '') + (r.as_name ? ' (' + r.as_name + ')' : ''));
+      if (r.bandwidth != null) console.log('  Bandwidth:  ' + r.bandwidth);
+      console.log('');
+    } catch (e) { console.error('Error checking Tor relay:', e.message); process.exit(2); }
+    process.exit(0);
+  }
+
+  // Tor hunt mode
+  if (args[0] === '--tor-hunt') {
+    const url = apiUrl + '/tor/hunt';
+    const headers = {};
+    if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+    try {
+      const json = await httpGet(url, headers);
+      const relays = json.data?.relays || json.data || [];
+      if (!relays.length) {
+        console.log('\n  No suspicious Tor relays found.');
+        process.exit(0);
+      }
+      console.log('\n  Suspicious Tor Relays (sorted by score)');
+      console.log('  ─────────────────────────────────────────────────────────────────────');
+      console.log('  ' + 'Score'.padEnd(7) + 'IP'.padEnd(18) + 'Nickname'.padEnd(20) + 'Country'.padEnd(10) + 'Flags');
+      console.log('  ' + '─────'.padEnd(7) + '──'.padEnd(18) + '────────'.padEnd(20) + '───────'.padEnd(10) + '─────');
+      for (const r of relays) {
+        const score = String(r.score || 0).padEnd(7);
+        const ip = (r.ip || r.address || '?').padEnd(18);
+        const nick = (r.nickname || '?').padEnd(20);
+        const country = (r.country || '?').padEnd(10);
+        const flags = Array.isArray(r.flags) ? r.flags.join(', ') : (r.flags || '');
+        console.log('  ' + score + ip + nick + country + flags);
+      }
+      console.log('\n  ' + relays.length + ' suspicious relay(s) found.');
+      console.log('');
+    } catch (e) { console.error('Error running Tor hunt:', e.message); process.exit(2); }
+    process.exit(0);
+  }
+
+  // Tor stats mode
+  if (args[0] === '--tor-stats') {
+    const url = apiUrl + '/tor/stats';
+    const headers = {};
+    if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+    try {
+      const json = await httpGet(url, headers);
+      const s = json.data || json;
+      console.log('\n  Tor Network Summary');
+      console.log('  ─────────────────────────────────────');
+      if (s.total_relays != null) console.log('  Total Relays:   ' + s.total_relays.toLocaleString());
+      if (s.exit_nodes != null) console.log('  Exit Nodes:     ' + s.exit_nodes.toLocaleString());
+      if (s.guard_nodes != null) console.log('  Guard Nodes:    ' + s.guard_nodes.toLocaleString());
+      if (s.countries != null) console.log('  Countries:      ' + s.countries.toLocaleString());
+      if (s.top_asns && Array.isArray(s.top_asns)) {
+        console.log('  Top ASNs:');
+        for (const asn of s.top_asns.slice(0, 10)) {
+          console.log('    ' + (asn.asn || asn.name || '?').toString().padEnd(12) + ' ' + (asn.count || asn.relays || 0) + ' relays');
+        }
+      }
+      console.log('');
+    } catch (e) { console.error('Error fetching Tor stats:', e.message); process.exit(2); }
     process.exit(0);
   }
 
