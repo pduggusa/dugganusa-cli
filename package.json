@@ -1,11 +1,21 @@
 {
   "name": "dugganusa-lookup",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI threat intel scanner. Check IPs, domains, hashes, CVEs against 1M+ IOCs from your terminal.",
   "bin": {
     "dugganusa-lookup": "./cli.js"
   },
-  "keywords": ["cli", "ioc", "threat-intelligence", "stix", "cybersecurity", "malware", "cve", "scanner", "dugganusa"],
+  "keywords": [
+    "cli",
+    "ioc",
+    "threat-intelligence",
+    "stix",
+    "cybersecurity",
+    "malware",
+    "cve",
+    "scanner",
+    "dugganusa"
+  ],
   "author": "DugganUSA LLC <patrick@dugganusa.com>",
   "license": "MIT",
   "repository": {
@@ -15,5 +25,9 @@
   "engines": {
     "node": ">=18"
   },
-  "files": ["cli.js", "LICENSE", "README.md"]
+  "files": [
+    "cli.js",
+    "LICENSE",
+    "README.md"
+  ]
 }
