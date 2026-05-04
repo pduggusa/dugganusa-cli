@@ -117,3 +117,31 @@ Set via `--key` flag or `DUGGANUSA_API_KEY` environment variable.
 ## License
 
 MIT — [DugganUSA LLC](https://www.dugganusa.com), Minneapolis, MN.
+
+---
+
+<!-- DUGGANUSA-FAMILY-FOOTER-V1 -->
+## DugganUSA Defender Family
+
+Same threat corpus, surfaced wherever you live. Open source, MIT licensed, receipts on every repo.
+
+| Plugin | Surface |
+|---|---|
+| [dugganusa-scanner-core](https://github.com/pduggusa/dugganusa-scanner-core) | Core IOC scanning engine |
+| [dugganusa-vscode](https://github.com/pduggusa/dugganusa-vscode) | VS Code extension |
+| [dugganusa-splunk](https://github.com/pduggusa/dugganusa-splunk) | Splunk Technology Add-on |
+| [dugganusa-slack](https://github.com/pduggusa/dugganusa-slack) | Slack bot |
+| [dugganusa-raycast](https://github.com/pduggusa/dugganusa-raycast) | Raycast extension |
+| [dugganusa-sentinel](https://github.com/pduggusa/dugganusa-sentinel) | Microsoft Sentinel TAXII connector |
+| [dugganusa-obsidian](https://github.com/pduggusa/dugganusa-obsidian) | Obsidian plugin |
+| [dugganusa-nvim](https://github.com/pduggusa/dugganusa-nvim) | Neovim plugin |
+| [dugganusa-elastic](https://github.com/pduggusa/dugganusa-elastic) | Elastic / OpenSearch integration |
+| [dugganusa-edge-shield](https://github.com/pduggusa/dugganusa-edge-shield) | Cloudflare Worker |
+| **dugganusa-cli** _(this repo)_ | CLI scanner |
+| [dugganusa-chrome](https://github.com/pduggusa/dugganusa-chrome) | Chrome extension |
+| [dugganusa-action](https://github.com/pduggusa/dugganusa-action) | GitHub Action |
+| [dredd-mcp](https://github.com/pduggusa/dredd-mcp) | Pre-flight MCP security (this repo) |
+
+Backed by the live DugganUSA threat intel platform: [analytics.dugganusa.com](https://analytics.dugganusa.com).
+
+_Jeevesus saves. Dredd judges._
