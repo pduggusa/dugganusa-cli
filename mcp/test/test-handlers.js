@@ -80,6 +80,12 @@ async function main() {
     assert.ok(r.result.content[0].text.startsWith('dredd BLOCK'));
   });
 
+  if (!API_KEY) {
+    process.stdout.write('\nupstream surface — SKIPPED (no DUGGANUSA_API_KEY in env)\n');
+    process.stdout.write(`  ${pass} pass, ${fail} fail (live-net tests skipped)\n`);
+    return;
+  }
+
   process.stdout.write('\nupstream surface (live network calls)\n');
 
   await check('search?q=185.39.19.176 returns hits or empty array', async () => {
