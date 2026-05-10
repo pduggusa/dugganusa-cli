@@ -1,19 +1,26 @@
-# dugganusa-lookup
+# dugganusa-cli
 
-**Threat intel from your terminal. 1,080,000+ IOCs.**
+**Threat intel from your terminal. 1,080,000+ IOCs. Plus a local MCP server.**
 
 ```bash
+# Scanner — check an IOC
 npx dugganusa-lookup 185.39.19.176
+
+# MCP server — wire DugganUSA into Claude Desktop / Cursor / Claude Code
+npx dugganusa-mcp
 ```
+
+This package ships two binaries from one install: the original `dugganusa-lookup` scanner (positional IOC arguments, CI/CD-friendly exit codes) and the new `dugganusa-mcp` STDIO MCP server (read-only, no exec paths, customer owns the binary).
 
 ## Install
 
 ```bash
-# Run without installing (npx)
+# Run without installing
 npx dugganusa-lookup 185.39.19.176
+npx dugganusa-mcp --help
 
-# Or install globally
-npm install -g dugganusa-lookup
+# Or install globally — gives you both bins
+npm install -g dugganusa-cli
 ```
 
 ## Usage
@@ -107,6 +114,71 @@ Set via `--key` flag or `DUGGANUSA_API_KEY` environment variable.
 
 1,080,000+ indicators from OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, DugganUSA original research, exploit harvester, and edge honeypots. Cross-correlated across 44 indexes. Same feed trusted by 275+ organizations in 46 countries.
 
+## MCP Server (dugganusa-mcp)
+
+Local STDIO MCP server. Wire it into any MCP client and your AI assistant gets the DugganUSA threat-intel corpus as read-only tools.
+
+### Three tools exposed
+
+- **search** — full-text across IOCs, pulses, blog, adversaries, CISA KEV, Epstein files, and 40+ indexes. 17.9M+ documents.
+- **enrich-ioc** — IP enrichment: country, ASN, threat type, malware family, cross-index correlations.
+- **stix-feed-summary** — index stats and pointers to our STIX 2.1 / TAXII 2.1 feeds.
+
+That's the whole surface. No tools that write, no tools that touch your filesystem, no tools that exec.
+
+### Wire it into Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+
+```json
+{
+  "mcpServers": {
+    "dugganusa": {
+      "command": "npx",
+      "args": ["-y", "dugganusa-cli", "dugganusa-mcp"],
+      "env": {
+        "DUGGANUSA_API_KEY": "your-key-or-leave-blank-for-anonymous"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop. The three tools appear in the tool picker. Same pattern works for Cursor, Windsurf, Claude Code, or any MCP client that speaks STDIO.
+
+### Local policy enforcement: --dredd-gate
+
+```bash
+dugganusa-mcp --dredd-gate
+```
+
+Validates tool name + required args before each call, logs every allowed call to stderr. Read it in `mcp/lib/serve.js` — function `dreddVerdict`. This is the hook where you wire stricter policy: deny lists, IP allow-lists, per-tool rate limits, or a remote dredd verdict endpoint.
+
+### Why this exists
+
+On April 20, 2026 we published "Anthropic's MCP Has a Critical RCE Vulnerability. We Don't Use MCP. Here's Why." The architectural problem we named was that MCP trusts the transport — STDIO gives an AI model a pipe to execute commands on the host. We meant it. We still don't use other people's MCPs without auditing them first. But there is a coherent answer: ship the MCP we'd audit. Read-only. No exec path. Customer owns the binary. Dredd-shaped local gate. No SDK dependency.
+
+This is that MCP.
+
+### Auditing the MCP binary
+
+Everything lives under `mcp/`:
+
+- `mcp/serve.js` — bin entry, argv parser (~45 LOC)
+- `mcp/lib/serve.js` — JSON-RPC 2.0 over STDIO (~125 LOC)
+- `mcp/lib/tools.js` — three tool schemas + handlers (~80 LOC)
+- `mcp/lib/upstream.js` — HTTPS request to analytics.dugganusa.com (~40 LOC)
+
+Read it. Grep for `child_process`, `exec`, `spawn`, `shell`, `eval`. You will not find them. Run the tests:
+
+```bash
+npm run test:mcp
+```
+
+10 tests covering the dispatch surface and live network calls.
+
+---
+
 ## Part of the DugganUSA Ecosystem
 
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=DugganUSALLC.dugganusa-threat-intel)
@@ -137,7 +209,7 @@ Same threat corpus, surfaced wherever you live. Open source, MIT licensed, recei
 | [dugganusa-nvim](https://github.com/pduggusa/dugganusa-nvim) | Neovim plugin |
 | [dugganusa-elastic](https://github.com/pduggusa/dugganusa-elastic) | Elastic / OpenSearch integration |
 | [dugganusa-edge-shield](https://github.com/pduggusa/dugganusa-edge-shield) | Cloudflare Worker |
-| **dugganusa-cli** _(this repo)_ | CLI scanner |
+| **dugganusa-cli** _(this repo)_ | CLI scanner + local STDIO MCP server |
 | [dugganusa-chrome](https://github.com/pduggusa/dugganusa-chrome) | Chrome extension |
 | [dugganusa-action](https://github.com/pduggusa/dugganusa-action) | GitHub Action |
 | [dredd-mcp](https://github.com/pduggusa/dredd-mcp) | Pre-flight MCP security (this repo) |

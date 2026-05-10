@@ -1,12 +1,18 @@
 {
-  "name": "dugganusa-lookup",
-  "version": "1.1.0",
-  "description": "CLI threat intel scanner. Check IPs, domains, hashes, CVEs against 1M+ IOCs from your terminal.",
+  "name": "dugganusa-cli",
+  "version": "1.2.0",
+  "description": "DugganUSA CLI — threat intel scanner (dugganusa-lookup) + local STDIO MCP server (dugganusa-mcp). 1M+ IOCs, read-only, customer owns the binary.",
   "bin": {
-    "dugganusa-lookup": "./cli.js"
+    "dugganusa-lookup": "./cli.js",
+    "dugganusa-mcp": "./mcp/serve.js"
+  },
+  "scripts": {
+    "test:mcp": "node mcp/test/test-handlers.js"
   },
   "keywords": [
     "cli",
+    "mcp",
+    "model-context-protocol",
     "ioc",
     "threat-intelligence",
     "stix",
@@ -14,6 +20,7 @@
     "malware",
     "cve",
     "scanner",
+    "jeevesus",
     "dugganusa"
   ],
   "author": "DugganUSA LLC <patrick@dugganusa.com>",
@@ -27,6 +34,7 @@
   },
   "files": [
     "cli.js",
+    "mcp/",
     "LICENSE",
     "README.md"
   ]
