@@ -1,0 +1,47 @@
+name: Publish to npm (Trusted Publisher)
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify package.json version matches tag
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "tag $TAG_VERSION != package.json $PKG_VERSION" >&2
+            exit 1
+          fi
+          echo "version $PKG_VERSION matches tag"
+
+      - name: Sanity check — no exec/spawn paths
+        run: |
+          if grep -rnE 'child_process|require\(.*shell|require\(.*child' cli.js mcp/ 2>/dev/null; then
+            echo "found shell/child_process reference — failing build" >&2
+            exit 1
+          fi
+          echo "clean — no shell/exec paths"
+
+      - name: Run MCP handler tests
+        run: npm run test:mcp
+
+      - name: Publish to npm with provenance
+        run: npm publish --provenance --access public

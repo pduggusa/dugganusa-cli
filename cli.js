@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
- * dugganusa-lookup — CLI threat intel scanner
+ * dugganusa-cli — CLI threat intel scanner
  *
  * Check IPs, domains, hashes, CVEs against 1.08M+ IOCs from your terminal.
  *
  * Usage:
- *   npx dugganusa-lookup 185.39.19.176
- *   npx dugganusa-lookup --file config.js
- *   cat firewall.log | npx dugganusa-lookup --stdin
- *   npx dugganusa-lookup --aipm google.com
- *   npx dugganusa-lookup --batch iocs.txt
- *   npx dugganusa-lookup --format json 185.39.19.176
+ *   npx dugganusa-cli 185.39.19.176
+ *   npx dugganusa-cli --file config.js
+ *   cat firewall.log | npx dugganusa-cli --stdin
+ *   npx dugganusa-cli --aipm google.com
+ *   npx dugganusa-cli --batch iocs.txt
+ *   npx dugganusa-cli --format json 185.39.19.176
  */
 
 const https = require('https');
@@ -99,17 +99,17 @@ function summarize(data) {
 // ============================================================================
 
 const USAGE = `
-  dugganusa-lookup — Threat intel from your terminal. 1.08M+ IOCs.
+  dugganusa-cli — Threat intel from your terminal. 1.08M+ IOCs.
 
   USAGE
-    dugganusa-lookup <indicator>              Look up a single IP/domain/hash/CVE
-    dugganusa-lookup --file <path>            Scan a file for IOCs
-    dugganusa-lookup --stdin                  Scan stdin (pipe-friendly)
-    dugganusa-lookup --batch <path>           Batch lookup (one IOC per line)
-    dugganusa-lookup --aipm <domain>          AIPM audit URL for a domain
-    dugganusa-lookup --tor-check <ip>         Check if an IP is a known Tor relay
-    dugganusa-lookup --tor-hunt               Show suspicious Tor relays (sorted by score)
-    dugganusa-lookup --tor-stats              Tor network summary statistics
+    dugganusa-cli <indicator>              Look up a single IP/domain/hash/CVE
+    dugganusa-cli --file <path>            Scan a file for IOCs
+    dugganusa-cli --stdin                  Scan stdin (pipe-friendly)
+    dugganusa-cli --batch <path>           Batch lookup (one IOC per line)
+    dugganusa-cli --aipm <domain>          AIPM audit URL for a domain
+    dugganusa-cli --tor-check <ip>         Check if an IP is a known Tor relay
+    dugganusa-cli --tor-hunt               Show suspicious Tor relays (sorted by score)
+    dugganusa-cli --tor-stats              Tor network summary statistics
 
   OPTIONS
     --key <api-key>       DugganUSA API key (or set DUGGANUSA_API_KEY env var)
@@ -118,14 +118,14 @@ const USAGE = `
     --help                Show this help
 
   EXAMPLES
-    dugganusa-lookup 185.39.19.176
-    dugganusa-lookup CVE-2026-21643
-    dugganusa-lookup --file terraform/main.tf --format markdown
-    cat /var/log/auth.log | dugganusa-lookup --stdin --quiet
-    dugganusa-lookup --aipm crowdstrike.com
-    dugganusa-lookup --tor-check 185.220.101.42
-    dugganusa-lookup --tor-hunt
-    dugganusa-lookup --tor-stats
+    dugganusa-cli 185.39.19.176
+    dugganusa-cli CVE-2026-21643
+    dugganusa-cli --file terraform/main.tf --format markdown
+    cat /var/log/auth.log | dugganusa-cli --stdin --quiet
+    dugganusa-cli --aipm crowdstrike.com
+    dugganusa-cli --tor-check 185.220.101.42
+    dugganusa-cli --tor-hunt
+    dugganusa-cli --tor-stats
 
   FREE API KEY
     https://analytics.dugganusa.com/stix/register
@@ -156,7 +156,7 @@ async function main() {
   // AIPM mode
   if (args[0] === '--aipm') {
     const domain = args[1];
-    if (!domain) { console.error('Usage: dugganusa-lookup --aipm <domain>'); process.exit(1); }
+    if (!domain) { console.error('Usage: dugganusa-cli --aipm <domain>'); process.exit(1); }
     const clean = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^www\./, '');
     console.log('AIPM Audit: https://aipmsec.com/audit.html?domain=' + encodeURIComponent(clean));
     process.exit(0);
@@ -165,7 +165,7 @@ async function main() {
   // Tor check mode
   if (args[0] === '--tor-check') {
     const ip = args[1];
-    if (!ip) { console.error('Usage: dugganusa-lookup --tor-check <ip>'); process.exit(1); }
+    if (!ip) { console.error('Usage: dugganusa-cli --tor-check <ip>'); process.exit(1); }
     const url = apiUrl + '/tor/relays?q=' + encodeURIComponent(ip) + '&limit=1';
     const headers = {};
     if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
