@@ -16,16 +16,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node 24 (ships npm 11+ with native OIDC Trusted Publishing)
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Pin npm 11+ (Trusted Publishing requires native OIDC)
+      - name: Confirm npm version >= 11.5 (Trusted Publishing requirement)
         run: |
-          npm install -g npm@latest
+          node --version
           npm --version
+          NPM_MAJOR=$(npm --version | cut -d. -f1)
+          if [ "$NPM_MAJOR" -lt 11 ]; then
+            echo "npm $NPM_MAJOR < 11 — Trusted Publishing needs 11+" >&2
+            exit 1
+          fi
 
       - name: Verify package.json version matches tag
         run: |
