@@ -35,6 +35,21 @@ const TOOLS = [
       type: 'object',
       properties: {}
     }
+  },
+  {
+    name: 'platform-status',
+    description: 'DugganUSA platform health — cron-tier aggregate (per-job ok/degraded/failing/stale/unknown counts) and Meili backplane (queue depth, oldest enqueued age, top index+type write distribution, wedged/backed_up/ok status). Use to triage "is X cron working" or "is the platform accepting writes". Read-only; no auth required.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        surface: {
+          type: 'string',
+          enum: ['both', 'crons', 'backplane'],
+          default: 'both',
+          description: 'Which view: cron tier, Meili write-path backplane, or both (default).'
+        }
+      }
+    }
   }
 ];
 
@@ -71,10 +86,46 @@ async function stixFeedSummary(_args, ctx) {
   };
 }
 
+async function platformStatus({ surface = 'both' } = {}, ctx) {
+  // Both endpoints are public (no auth) — same precedent as /tor/stats.
+  // Phase 3 of the status surface (post 2026-05-17 butterbot wedge incident).
+  const out = {};
+  if (surface === 'both' || surface === 'crons') {
+    const cron = await request(ctx.upstream, '/api/v1/status', { apiKey: ctx.apiKey }).catch((e) => ({ _error: e.message }));
+    const c = cron?.data ?? cron;
+    out.crons = c?._error ? c : {
+      summary: c?.summary ?? null,
+      problems: (c?.jobs ?? []).filter((j) => j.status !== 'ok' && j.status !== 'unknown').map((j) => ({
+        id: j.id,
+        status: j.status,
+        latest_run: j.latest_run?.timestamp ?? null,
+        age_minutes: j.latest_run?.age_minutes ?? null
+      })),
+      generated_at: c?.generated_at ?? null
+    };
+  }
+  if (surface === 'both' || surface === 'backplane') {
+    const bp = await request(ctx.upstream, '/api/v1/status/backplane', { apiKey: ctx.apiKey }).catch((e) => ({ _error: e.message }));
+    const b = bp?.data ?? bp;
+    out.backplane = b?._error ? b : {
+      status: b?.status ?? null,
+      meili_health: b?.meili?.health ?? null,
+      tasks: b?.meili?.tasks ?? null,
+      oldest_enqueued_age_seconds: b?.meili?.queue?.oldest_enqueued_age_seconds ?? null,
+      oldest_enqueued_index: b?.meili?.queue?.oldest_enqueued_index ?? null,
+      oldest_enqueued_type: b?.meili?.queue?.oldest_enqueued_type ?? null,
+      top_enqueued_by_index_type: (b?.meili?.top_enqueued_by_index_type ?? []).slice(0, 8),
+      generated_at: b?.generated_at ?? null
+    };
+  }
+  return out;
+}
+
 const HANDLERS = {
   search,
   'enrich-ioc': enrichIoc,
-  'stix-feed-summary': stixFeedSummary
+  'stix-feed-summary': stixFeedSummary,
+  'platform-status': platformStatus
 };
 
 module.exports = { TOOLS, HANDLERS };

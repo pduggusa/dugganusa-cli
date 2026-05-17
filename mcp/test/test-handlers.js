@@ -34,11 +34,11 @@ async function main() {
     assert.ok(r.result.capabilities.tools);
   });
 
-  await check('tools/list returns all three tools', async () => {
+  await check('tools/list returns all four tools', async () => {
     const r = await dispatch({ jsonrpc: '2.0', id: 2, method: 'tools/list' }, ctx);
-    assert.strictEqual(r.result.tools.length, 3);
+    assert.strictEqual(r.result.tools.length, 4);
     const names = r.result.tools.map((t) => t.name).sort();
-    assert.deepStrictEqual(names, ['enrich-ioc', 'search', 'stix-feed-summary']);
+    assert.deepStrictEqual(names, ['enrich-ioc', 'platform-status', 'search', 'stix-feed-summary']);
     for (const t of r.result.tools) {
       assert.ok(t.description && t.description.length > 20, `${t.name} missing description`);
       assert.ok(t.inputSchema && t.inputSchema.type === 'object', `${t.name} bad schema`);

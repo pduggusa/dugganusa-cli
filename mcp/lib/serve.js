@@ -37,7 +37,7 @@ async function dispatch(msg, ctx) {
       serverInfo: SERVER_INFO,
       instructions:
         'DugganUSA threat intelligence MCP. Read-only. Local STDIO binary; customer owns the process. ' +
-        'Tools: search, enrich-ioc, stix-feed-summary. Upstream: ' + ctx.upstream
+        'Tools: search, enrich-ioc, stix-feed-summary, platform-status. Upstream: ' + ctx.upstream
     });
   }
 
