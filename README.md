@@ -1,6 +1,14 @@
 # dugganusa-cli
 
-**1.08M+ IOCs. 17.9M+ documents. Two binaries. One install. The MCP we'd audit.**
+**1.10M+ IOCs. ~17.9M+ documents. Two binaries. One install. The MCP we'd audit.**
+
+## What's New (v1.5.0)
+
+- **Supply-chain scanning leveled up.** The corpus now ingests OSV malicious-package feeds for **both npm and PyPI** — named-malicious packages, zero-heuristic, daily — alongside daily GitHub Hunt detections of malware-staging repos and install-time execution signatures. Pipe a lockfile or `--file package.json` and known-bad packages surface next to network IOCs. This is the CI angle: catch a poisoned dependency before it ships.
+- **Three live, no-auth, deploy-durable validation endpoints** now prove feed quality:
+  - **Novelty** — [feed-uniqueness](https://analytics.dugganusa.com/api/v1/feed-uniqueness): ~75%+ of what we publish ThreatFox doesn't have (measured live).
+  - **Timeliness** — [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead): exploited CVEs flagged ~31 days ahead of CISA KEV on average.
+  - **Accuracy** — [spamhaus-validation](https://analytics.dugganusa.com/api/v1/spamhaus-validation): Spamhaus independently corroborates our first-hand contributions.
 
 ```bash
 # Scanner — block bad IOCs in your stack
@@ -16,7 +24,7 @@ That's the stack that named **TeamPCP** 45 days before CISA added LiteLLM CVE-20
 
 This is the CLI that puts the same corpus in your terminal.
 
-> **v1.3.0 rename:** the scanner bin was `dugganusa-lookup` in v1.2.0. It is now `dugganusa-cli`. The MCP bin (`dugganusa-mcp`) is unchanged. Update any pinned scripts.
+> **Bin rename (since v1.3.0):** the scanner bin was `dugganusa-lookup` in v1.2.0. It is now `dugganusa-cli`. The old `dugganusa-lookup` package is dead — use `dugganusa-cli`. The MCP bin (`dugganusa-mcp`) is unchanged. Update any pinned scripts.
 
 ## Install
 
@@ -110,15 +118,13 @@ fi
 
 ## API key
 
-Free tier: 500 queries/day. Anonymous lookups work for casual use.
+The STIX feed is API-key-enforced: anonymous requests get `401`, an unregistered Bearer gets `429`. The **free tier is a free *registered* key** — not anonymous. Register here: [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register)
 
-Free key for higher limits: [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register)
-
-Set via `--key` flag or `DUGGANUSA_API_KEY` env var.
+Free tier: 500 queries/day. Set the key via `--key` flag or `DUGGANUSA_API_KEY` env var.
 
 ## What's in the index
 
-1.08M+ indicators sourced from OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, DugganUSA original research, our exploit harvester, and our edge honeypots. Cross-correlated across 44 indexes covering 17.9M+ documents. The same feed pulled daily by 275+ organizations in 46 countries — including Microsoft, AT&T, and Starlink.
+1.10M+ indicators sourced from 15 external feed sources (OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, OSV malicious-package feeds for npm + PyPI, and more), plus DugganUSA original research, our exploit harvester, daily GitHub Hunt detections, and our edge honeypots. Cross-correlated across 44 indexes covering ~17.9M+ documents. The same feed pulled daily by 275+ consumers in 46 countries — including Microsoft, AT&T, and Starlink.
 
 You are getting the receipts the big platforms get. Same corpus, your terminal.
 
@@ -149,7 +155,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
       "command": "npx",
       "args": ["-y", "-p", "dugganusa-cli", "dugganusa-mcp"],
       "env": {
-        "DUGGANUSA_API_KEY": "your-key-or-leave-blank-for-anonymous"
+        "DUGGANUSA_API_KEY": "your-registered-key"
       }
     }
   }
@@ -246,9 +252,9 @@ Read the math: [dugganusa.com/post/45-days-early-on-litellm-20-days-early-on-ngi
 ## Part of the DugganUSA ecosystem
 
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=DugganUSALLC.dugganusa-threat-intel)
-- [STIX Feed](https://analytics.dugganusa.com/api/v1/stix-feed) — pulled daily by 275+ orgs in 46 countries
-- [AIPM Security](https://aipmsec.com) — AI presence audits (776+ run, 228 domains)
-- [dugganusa.com](https://www.dugganusa.com) — 1,641+ blog posts, methodology, receipts
+- [STIX Feed](https://analytics.dugganusa.com/api/v1/stix-feed) — pulled daily by 275+ consumers in 46 countries
+- [AIPM Security](https://aipmsec.com) — AI presence audits
+- [dugganusa.com](https://www.dugganusa.com) — 1,655+ blog posts, methodology, receipts
 
 ## License
 
