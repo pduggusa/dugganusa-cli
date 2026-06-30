@@ -1,14 +1,15 @@
 # dugganusa-cli
 
-**1.10M+ IOCs. ~17.9M+ documents. Two binaries. One install. The MCP we'd audit.**
+**1.5M+ IOCs. ~38M+ documents. Two binaries. One install. The MCP we'd audit.**
 
-## What's New (v1.5.0)
+## What's New (v1.5.1)
 
 - **Supply-chain scanning leveled up.** The corpus now ingests OSV malicious-package feeds for **both npm and PyPI** — named-malicious packages, zero-heuristic, daily — alongside daily GitHub Hunt detections of malware-staging repos and install-time execution signatures. Pipe a lockfile or `--file package.json` and known-bad packages surface next to network IOCs. This is the CI angle: catch a poisoned dependency before it ships.
-- **Three live, no-auth, deploy-durable validation endpoints** now prove feed quality:
+- **Four live, no-auth, deploy-durable validation endpoints** now prove feed quality:
   - **Novelty** — [feed-uniqueness](https://analytics.dugganusa.com/api/v1/feed-uniqueness): ~75%+ of what we publish ThreatFox doesn't have (measured live).
-  - **Timeliness** — [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead): exploited CVEs flagged ~31 days ahead of CISA KEV on average.
+  - **Timeliness** — [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead): a live ledger of how far ahead of CISA KEV we flagged each exploited CVE — positive leads, same-day, and no-receipt all shown honestly, with receipts.
   - **Accuracy** — [spamhaus-validation](https://analytics.dugganusa.com/api/v1/spamhaus-validation): Spamhaus independently corroborates our first-hand contributions.
+  - **Liveness** — [feed-efficacy](https://analytics.dugganusa.com/api/v1/feed-efficacy): opt-in consumer reports of when our indicators actually fire on real traffic — proof the feed is operationally live, not just large.
 
 ```bash
 # Scanner — block bad IOCs in your stack
@@ -124,7 +125,7 @@ Free tier: 500 queries/day. Set the key via `--key` flag or `DUGGANUSA_API_KEY` 
 
 ## What's in the index
 
-1.10M+ indicators sourced from 15 external feed sources (OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, OSV malicious-package feeds for npm + PyPI, and more), plus DugganUSA original research, our exploit harvester, daily GitHub Hunt detections, and our edge honeypots. Cross-correlated across 44 indexes covering ~17.9M+ documents. The same feed pulled daily by 275+ consumers in 46 countries — including Microsoft, AT&T, and Starlink.
+1.5M+ indicators sourced from 15 external feed sources (OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, OSV malicious-package feeds for npm + PyPI, and more), plus DugganUSA original research, our exploit harvester, daily GitHub Hunt detections, and our edge honeypots. Cross-correlated across 65 indexes covering ~38M+ documents. The same feed pulled daily by 275+ consumers in 46 countries — including Microsoft, AT&T, and Starlink.
 
 You are getting the receipts the big platforms get. Same corpus, your terminal.
 
@@ -138,7 +139,7 @@ This is the MCP we wrote because the ones we audited were dangerous.
 
 ### Three tools, that's it
 
-- **search** — full-text across IOCs, pulses, blog, adversaries, CISA KEV, Epstein files, and 40+ indexes. 17.9M+ documents.
+- **search** — full-text across IOCs, pulses, blog, adversaries, CISA KEV, Epstein files, and 40+ indexes. 38M+ documents.
 - **enrich-ioc** — IP enrichment: country, ASN, threat type, malware family, cross-index correlations.
 - **stix-feed-summary** — index stats + pointers to our STIX 2.1 / TAXII 2.1 feeds.
 

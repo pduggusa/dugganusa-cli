@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.1] - 2026-06-30
+
+### Added
+- Documented the fourth live validation axis — Liveness (/api/v1/feed-efficacy).
+
+### Changed
+- Refreshed IOC corpus copy to 1.5M+ IOCs (~1.57M live) and ~38M documents across 65 indexes.
+- Reworded the Timeliness validation bullet to point at the live kev-lead ledger instead of a fixed "~31 days ahead" average.
+
 ## 1.5.0
 
 - Highlighted expanded supply-chain coverage: OSV malicious-package ingestion for **both npm and PyPI** (named-malicious, zero-heuristic, daily) plus daily GitHub Hunt detections of malware-staging repos and install-time execution signatures — strong CI angle for scanning lockfiles/manifests.
