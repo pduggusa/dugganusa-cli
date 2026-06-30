@@ -2,7 +2,7 @@
 /**
  * dugganusa-cli — CLI threat intel scanner
  *
- * Check IPs, domains, hashes, CVEs against 1.08M+ IOCs from your terminal.
+ * Check IPs, domains, hashes, CVEs against 1.5M+ IOCs from your terminal.
  *
  * Usage:
  *   npx dugganusa-cli 185.39.19.176
@@ -99,7 +99,7 @@ function summarize(data) {
 // ============================================================================
 
 const USAGE = `
-  dugganusa-cli — Threat intel from your terminal. 1.08M+ IOCs.
+  dugganusa-cli — Threat intel from your terminal. 1.5M+ IOCs.
 
   USAGE
     dugganusa-cli <indicator>              Look up a single IP/domain/hash/CVE
