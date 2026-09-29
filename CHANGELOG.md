@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.3] - 2026-09-29
+
+### Changed
+- Refreshed corpus figures from the live `/api/v1/search/stats` (1.9M+ IOCs, ~68M documents across 70 indexes).
+- Removed the retired "275+ consumers in 46 countries" line. It counted blocked, User-Agent-less scrapers as consumers, so we stopped quoting it on 2026-05-30.
+
 ## [1.5.2] - 2026-06-30
 
 ### Fixed

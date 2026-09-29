@@ -1,6 +1,6 @@
 # dugganusa-cli
 
-**1.5M+ IOCs. ~38M+ documents. Two binaries. One install. The MCP we'd audit.**
+**1.9M+ IOCs. ~68M+ documents. Two binaries. One install. The MCP we'd audit.**
 
 ## What's New (v1.5.1)
 
@@ -125,7 +125,7 @@ Free tier: 500 queries/day. Set the key via `--key` flag or `DUGGANUSA_API_KEY` 
 
 ## What's in the index
 
-1.5M+ indicators sourced from 15 external feed sources (OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, OSV malicious-package feeds for npm + PyPI, and more), plus DugganUSA original research, our exploit harvester, daily GitHub Hunt detections, and our edge honeypots. Cross-correlated across 65 indexes covering ~38M+ documents. The same feed pulled daily by 275+ consumers in 46 countries — including Microsoft, AT&T, and Starlink.
+1.9M+ indicators sourced from 15 external feed sources (OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, OSV malicious-package feeds for npm + PyPI, and more), plus DugganUSA original research, our exploit harvester, daily GitHub Hunt detections, and our edge honeypots. Cross-correlated across 70 indexes covering ~68M+ documents. The same feed pulled daily by 275+ consumers in 46 countries — including Microsoft, AT&T, and Starlink.
 
 You are getting the receipts the big platforms get. Same corpus, your terminal.
 
@@ -139,7 +139,7 @@ This is the MCP we wrote because the ones we audited were dangerous.
 
 ### Three tools, that's it
 
-- **search** — full-text across IOCs, pulses, blog, adversaries, CISA KEV, Epstein files, and 40+ indexes. 38M+ documents.
+- **search** — full-text across IOCs, pulses, blog, adversaries, CISA KEV, Epstein files, and 70 indexes. 68M+ documents.
 - **enrich-ioc** — IP enrichment: country, ASN, threat type, malware family, cross-index correlations.
 - **stix-feed-summary** — index stats + pointers to our STIX 2.1 / TAXII 2.1 feeds.
 
@@ -253,7 +253,7 @@ Read the math: [dugganusa.com/post/45-days-early-on-litellm-20-days-early-on-ngi
 ## Part of the DugganUSA ecosystem
 
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=DugganUSALLC.dugganusa-threat-intel)
-- [STIX Feed](https://analytics.dugganusa.com/api/v1/stix-feed) — pulled daily by 275+ consumers in 46 countries
+- [STIX Feed](https://analytics.dugganusa.com/api/v1/stix-feed)
 - [AIPM Security](https://aipmsec.com) — AI presence audits
 - [dugganusa.com](https://www.dugganusa.com) — 1,655+ blog posts, methodology, receipts
 
