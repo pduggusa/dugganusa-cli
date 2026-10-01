@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.4] - 2026-10-01
+
+### Fixed
+- `bin` paths no longer carry a leading `./`. npm 11.8 deletes `./`-prefixed bin entries on publish instead of normalizing them, so 1.5.3 would have installed with no `dugganusa-cli` or `dugganusa-mcp` command. 1.5.3 was never published to npm.
+- `repository.url` uses the canonical `git+https` form.
+
 ## [1.5.3] - 2026-09-29
 
 ### Changed

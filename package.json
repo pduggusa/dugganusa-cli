@@ -1,11 +1,11 @@
 {
   "name": "dugganusa-cli",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "DugganUSA CLI — threat intel scanner (dugganusa-cli) + local STDIO MCP server (dugganusa-mcp). 1.9M+ IOCs, read-only, customer owns the binary.",
   "mcpName": "io.github.pduggusa/dugganusa-cli",
   "bin": {
-    "dugganusa-cli": "./cli.js",
-    "dugganusa-mcp": "./mcp/serve.js"
+    "dugganusa-cli": "cli.js",
+    "dugganusa-mcp": "mcp/serve.js"
   },
   "scripts": {
     "test:mcp": "node mcp/test/test-handlers.js"
@@ -28,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pduggusa/dugganusa-cli"
+    "url": "git+https://github.com/pduggusa/dugganusa-cli.git"
   },
   "engines": {
     "node": ">=18"
