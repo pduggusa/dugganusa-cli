@@ -1,6 +1,10 @@
 # dugganusa-cli
 
-**1.9M+ IOCs. ~68M+ documents. Two binaries. One install. The MCP we'd audit.**
+**You do you. I do me. We share contexts.**
+
+Your terminal and your agent keep their own context; the DugganUSA Feed lends them its context, read-only, from a binary you own.
+
+**Two binaries. One install. Threat intelligence you can check.** Corpus size: [live counts](https://analytics.dugganusa.com/api/v1/search/stats).
 
 ## What's New (v1.5.1)
 
@@ -80,7 +84,7 @@ export DUGGANUSA_API_KEY=dugusa_YOUR_KEY
 ## Output
 
 ```
-  !!    12  185.39.19.176                                 IOC: Cobalt Strike C2 (via SSLBL) | Blocked 47x | 3 OTX pulse(s)
+  !!    12  185.39.19.176                                 IOC: Cobalt Strike C2 (via SSLBL) | Blocked 47x | 12 cross-index hits
   OK     0  8.8.8.8                                       clean
 
   1 threat indicator(s) found in 2 checked.
@@ -121,13 +125,13 @@ fi
 
 The STIX feed is API-key-enforced: anonymous requests get `401`, an unregistered Bearer gets `429`. The **free tier is a free *registered* key** — not anonymous. Register here: [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register)
 
-Free tier: 500 queries/day. Set the key via `--key` flag or `DUGGANUSA_API_KEY` env var.
+Free tier: 10 queries/day ([pricing](https://analytics.dugganusa.com/stix/pricing)). Set the key via `--key` flag or `DUGGANUSA_API_KEY` env var.
 
 ## What's in the index
 
-1.9M+ indicators sourced from 15 external feed sources (OTX, abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, OSV malicious-package feeds for npm + PyPI, and more), plus DugganUSA original research, our exploit harvester, daily GitHub Hunt detections, and our edge honeypots. Cross-correlated across 70 indexes covering ~68M+ documents. The same feed pulled daily by 275+ consumers in 46 countries — including Microsoft, AT&T, and Starlink.
+Indicators sourced from external feeds (abuse.ch SSLBL, URLhaus, Spamhaus, CISA KEV, OSV malicious-package feeds for npm + PyPI, and more), plus DugganUSA original research, our exploit harvester, daily GitHub Hunt detections, and our edge honeypots. Cross-correlated across the whole corpus ([live counts](https://analytics.dugganusa.com/api/v1/search/stats)).
 
-You are getting the receipts the big platforms get. Same corpus, your terminal.
+Same corpus, your terminal.
 
 ---
 
@@ -139,7 +143,7 @@ This is the MCP we wrote because the ones we audited were dangerous.
 
 ### Three tools, that's it
 
-- **search** — full-text across IOCs, pulses, blog, adversaries, CISA KEV, Epstein files, and 70 indexes. 68M+ documents.
+- **search** — full-text across IOCs, blog, adversaries, CISA KEV and the rest of the corpus ([live counts](https://analytics.dugganusa.com/api/v1/search/stats)).
 - **enrich-ioc** — IP enrichment: country, ASN, threat type, malware family, cross-index correlations.
 - **stix-feed-summary** — index stats + pointers to our STIX 2.1 / TAXII 2.1 feeds.
 
@@ -253,13 +257,13 @@ Read the math: [dugganusa.com/post/45-days-early-on-litellm-20-days-early-on-ngi
 ## Part of the DugganUSA ecosystem
 
 - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=DugganUSALLC.dugganusa-threat-intel)
-- [STIX Feed](https://analytics.dugganusa.com/api/v1/stix-feed)
-- [AIPM Security](https://aipmsec.com) — AI presence audits
-- [dugganusa.com](https://www.dugganusa.com) — 1,655+ blog posts, methodology, receipts
+- [DugganUSA Feed](https://analytics.dugganusa.com/stix)
+- [AIPM](https://aipmsec.com) — AI Presence Management: what AIs say about you
+- [dugganusa.com](https://www.dugganusa.com) — research, methodology, receipts
 
 ## License
 
-MIT — [DugganUSA LLC](https://www.dugganusa.com), Minneapolis, MN.
+MIT — [DugganUSA LLC](https://www.dugganusa.com), Minnesota. Contact: help@dugganusa.com.
 
 Free tier means free. Audit it. Fork it. Tell us when we got something wrong.
 
@@ -268,7 +272,7 @@ Free tier means free. Audit it. Fork it. Tell us when we got something wrong.
 <!-- DUGGANUSA-FAMILY-FOOTER-V1 -->
 ## DugganUSA Defender Family
 
-Same threat corpus, surfaced wherever you live. Open source, MIT licensed, receipts on every repo.
+Same DugganUSA Feed, surfaced wherever you live. Open source, MIT licensed, receipts on every repo.
 
 | Plugin | Surface |
 |---|---|
@@ -287,6 +291,6 @@ Same threat corpus, surfaced wherever you live. Open source, MIT licensed, recei
 | [dugganusa-action](https://github.com/pduggusa/dugganusa-action) | GitHub Action |
 | [dredd-mcp](https://github.com/pduggusa/dredd-mcp) | Pre-flight MCP security judge |
 
-Backed by the live DugganUSA threat intel platform: [analytics.dugganusa.com](https://analytics.dugganusa.com).
+Backed by the [DugganUSA Feed](https://analytics.dugganusa.com/stix). Numbers are live: [/api/v1/search/stats](https://analytics.dugganusa.com/api/v1/search/stats). Pricing: [analytics.dugganusa.com/stix/pricing](https://analytics.dugganusa.com/stix/pricing). Contact: help@dugganusa.com.
 
-_Jeevesus saves. Dredd judges._
+_Threat intelligence you can check._
