@@ -125,7 +125,7 @@ fi
 
 The STIX feed is API-key-enforced: anonymous requests and unregistered keys get `401`; a registered key past its daily limit gets `429`. The **free tier is a free *registered* key** — not anonymous. Register here: [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register)
 
-Free tier: 10 queries/day ([pricing](https://analytics.dugganusa.com/stix/pricing)). Set the key via `--key` flag or `DUGGANUSA_API_KEY` env var.
+Free tier: 10 queries/day ([pricing](https://analytics.dugganusa.com/pricing)). Set the key via `--key` flag or `DUGGANUSA_API_KEY` env var.
 
 ## What's in the index
 
@@ -291,6 +291,6 @@ Same DugganUSA Feed, surfaced wherever you live. Open source, MIT licensed, rece
 | [dugganusa-action](https://github.com/pduggusa/dugganusa-action) | GitHub Action |
 | [dredd-mcp](https://github.com/pduggusa/dredd-mcp) | Pre-flight MCP security judge |
 
-Backed by the [DugganUSA Feed](https://analytics.dugganusa.com/stix). Numbers are live: [/api/v1/search/stats](https://analytics.dugganusa.com/api/v1/search/stats). Pricing: [analytics.dugganusa.com/stix/pricing](https://analytics.dugganusa.com/stix/pricing). Contact: help@dugganusa.com.
+Backed by the [DugganUSA Feed](https://analytics.dugganusa.com/stix). Numbers are live: [/api/v1/search/stats](https://analytics.dugganusa.com/api/v1/search/stats). Pricing: [analytics.dugganusa.com/pricing](https://analytics.dugganusa.com/pricing). Contact: help@dugganusa.com.
 
 _Threat intelligence you can check._
