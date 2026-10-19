@@ -58,7 +58,16 @@ function httpGet(url, headers = {}) {
     const req = https.get(url, { headers, timeout: 10000 }, (res) => {
       let body = '';
       res.on('data', c => body += c);
-      res.on('end', () => { try { resolve(JSON.parse(body)); } catch { reject(new Error('Invalid JSON')); } });
+      res.on('end', () => {
+        // A non-2xx (401 no/invalid key, 429 daily limit, 5xx) carries a JSON error body with
+        // no correlations. Parsing it as a result reported every indicator "clean". Reject instead.
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          let msg = 'HTTP ' + res.statusCode;
+          try { const j = JSON.parse(body); if (j.error) msg += ' (' + j.error + ')'; } catch {}
+          return reject(new Error(msg));
+        }
+        try { resolve(JSON.parse(body)); } catch { reject(new Error('Invalid JSON')); }
+      });
     });
     req.on('error', reject);
     req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
@@ -75,7 +84,7 @@ async function lookupIOC(value, apiKey, apiUrl) {
     const correlations = json.data?.correlations || {};
     const hits = Object.values(correlations).reduce((s, h) => s + (Array.isArray(h) ? h.length : 0), 0);
     return hits > 0 ? { found: true, hits, data: correlations } : { found: false, hits: 0 };
-  } catch (e) { return { found: false, hits: 0, error: e.message }; }
+  } catch (e) { return { found: false, unknown: true, hits: 0, error: e.message }; }
 }
 
 function summarize(data) {
@@ -171,7 +180,10 @@ async function main() {
     if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
     try {
       const json = await httpGet(url, headers);
-      const relays = json.data?.relays || json.data || [];
+      // /tor/relays returns { data: { hits: [...] } } and the search is fuzzy (q=1.1.1.1 matches
+      // 89.247.27.1), so only an exact address match counts.
+      const hits = json.data?.hits || json.data?.relays || [];
+      const relays = hits.filter(h => h.address === ip || h.ip === ip);
       if (!relays.length) {
         console.log('\n  ' + ip + ' is NOT a known Tor relay.');
         process.exit(0);
@@ -264,7 +276,7 @@ async function main() {
       results.push({ value, ...r });
     }
     outputResults(results, format, quiet);
-    process.exit(results.some(r => r.found) ? 1 : 0);
+    process.exit(exitCode(results));
   } else {
     // Single indicator(s) as positional args
     const values = args.filter(a => !a.startsWith('--'));
@@ -276,7 +288,7 @@ async function main() {
       results.push({ value, ...r });
     }
     outputResults(results, format, quiet);
-    process.exit(results.some(r => r.found) ? 1 : 0);
+    process.exit(exitCode(results));
   }
 
   // File/stdin mode — extract then lookup
@@ -295,16 +307,30 @@ async function main() {
     }
     if (iocs.length > 50) console.error('(capped at 50 lookups — ' + (iocs.length - 50) + ' skipped)');
     outputResults(results, format, quiet);
-    process.exit(results.some(r => r.found) ? 1 : 0);
+    process.exit(exitCode(results));
   }
 }
 
+// 1 = threat found, 2 = at least one indicator could not be checked (never reported clean), 0 = verified clean.
+function exitCode(results) {
+  if (results.some(r => r.found)) return 1;
+  if (results.some(r => r.unknown)) return 2;
+  return 0;
+}
+
 function outputResults(results, format, quiet) {
-  const filtered = quiet ? results.filter(r => r.found) : results;
+  const filtered = quiet ? results.filter(r => r.found || r.unknown) : results;
   if (!filtered.length) {
     if (quiet) return;
     console.log('\n  All clean. No threat indicators found.');
     return;
+  }
+  const unknownCount = results.filter(r => r.unknown).length;
+  if (unknownCount) {
+    const why = results.find(r => r.unknown).error;
+    console.error('\n  ' + unknownCount + ' indicator(s) could NOT be checked (' + why + '). They are UNKNOWN, not clean.');
+    if (/401/.test(why)) console.error('  A free registered key is required: https://analytics.dugganusa.com/stix/register');
+    if (/429/.test(why)) console.error('  Daily query limit reached (free tier: 10/day).');
   }
 
   process.stderr.write('\r' + ' '.repeat(60) + '\r'); // clear progress line
@@ -315,7 +341,7 @@ function outputResults(results, format, quiet) {
         scanned: results.length,
         found: results.filter(r => r.found).length,
         results: filtered.map(r => ({
-          value: r.value, found: r.found, hits: r.hits || 0,
+          value: r.value, found: r.found, status: r.found ? 'found' : r.unknown ? 'unknown' : 'not-found', hits: r.hits || 0, error: r.error,
           summary: r.found ? summarize(r.data) : null
         })),
         timestamp: new Date().toISOString(),
@@ -326,7 +352,7 @@ function outputResults(results, format, quiet) {
       console.log('| Status | Value | Hits | Summary |');
       console.log('|--------|-------|------|---------|');
       for (const r of filtered) {
-        console.log('| ' + (r.found ? 'WARNING' : 'clean') + ' | `' + r.value + '` | ' + (r.hits||0) + ' | ' + (r.found ? summarize(r.data) : '') + ' |');
+        console.log('| ' + (r.found ? 'WARNING' : r.unknown ? 'UNKNOWN' : 'clean') + ' | `' + r.value + '` | ' + (r.hits||0) + ' | ' + (r.found ? summarize(r.data) : '') + ' |');
       }
       console.log('\n**' + results.filter(r=>r.found).length + '** threat indicator(s) in ' + results.length + ' checked.');
       break;
@@ -334,10 +360,10 @@ function outputResults(results, format, quiet) {
     default: // table
       console.log('');
       for (const r of filtered) {
-        const icon = r.found ? '  !! ' : '  OK ';
+        const icon = r.found ? '  !! ' : r.unknown ? '  ?? ' : '  OK ';
         const hits = String(r.hits || 0).padStart(4);
         const val = r.value.padEnd(45).slice(0,45);
-        const sum = r.found ? summarize(r.data) : 'clean';
+        const sum = r.found ? summarize(r.data) : r.unknown ? 'UNKNOWN (' + r.error + ')' : 'clean';
         console.log(icon + hits + '  ' + val + ' ' + sum);
       }
       const found = results.filter(r => r.found).length;

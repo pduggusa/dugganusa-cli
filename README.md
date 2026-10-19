@@ -96,9 +96,9 @@ export DUGGANUSA_API_KEY=dugusa_YOUR_KEY
 
 | Code | Meaning |
 |------|---------|
-| 0 | All clean — no threat indicators found |
+| 0 | All clean — every indicator was checked and none was found |
 | 1 | Threat indicator(s) found — use in CI to fail builds |
-| 2 | Error (network, invalid input, etc.) |
+| 2 | At least one indicator could not be checked (missing/invalid key → 401, daily limit → 429, network error). Reported as UNKNOWN, never as clean |
 
 Exit 1 on match is the whole point. Block deployments containing known-bad indicators before they ship.
 
@@ -123,7 +123,7 @@ fi
 
 ## API key
 
-The STIX feed is API-key-enforced: anonymous requests get `401`, an unregistered Bearer gets `429`. The **free tier is a free *registered* key** — not anonymous. Register here: [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register)
+The STIX feed is API-key-enforced: anonymous requests and unregistered keys get `401`; a registered key past its daily limit gets `429`. The **free tier is a free *registered* key** — not anonymous. Register here: [analytics.dugganusa.com/stix/register](https://analytics.dugganusa.com/stix/register)
 
 Free tier: 10 queries/day ([pricing](https://analytics.dugganusa.com/stix/pricing)). Set the key via `--key` flag or `DUGGANUSA_API_KEY` env var.
 

@@ -1,6 +1,6 @@
 {
   "name": "dugganusa-cli",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "DugganUSA CLI: threat intel scanner (dugganusa-cli) + local STDIO MCP server (dugganusa-mcp) over the DugganUSA Feed. Read-only, customer owns the binary.",
   "mcpName": "io.github.pduggusa/dugganusa-cli",
   "bin": {

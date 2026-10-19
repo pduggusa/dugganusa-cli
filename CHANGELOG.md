@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.5] - 2026-10-19
+
+### Security - read this if you ran the CLI without an API key
+- **Lookups that failed were reported clean.** `httpGet` never checked the HTTP status, so a `401` (no key or an unregistered key), a `429` (daily limit) or a `5xx` parsed to an empty result and printed `OK ... clean` with exit code `0`. Every keyless run, and every run past the free tier's 10 lookups/day, passed. Treat any earlier clean result from such a run as unverified.
+- Failed lookups are now `UNKNOWN`, printed as `??`, and the run exits `2`. Exit `0` now means every indicator was actually checked.
+
+### Fixed
+- `--tor-check` always printed "NOT a known Tor relay". `/tor/relays` returns `data.hits`, not `data.relays`, and its search is fuzzy, so the check now requires an exact address match.
+- README: unregistered keys get `401`, not `429`.
+
 ## [1.5.4] - 2026-10-01
 
 ### Fixed
