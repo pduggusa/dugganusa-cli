@@ -1,5 +1,7 @@
 # dugganusa-cli
 
+**Docs:** https://docs.dugganusa.com/quickstart/
+
 **You do you. I do me. We share contexts.**
 
 Your terminal and your agent keep their own context; the DugganUSA Feed lends them its context, read-only, from a binary you own.
@@ -89,6 +91,8 @@ export DUGGANUSA_API_KEY=dugusa_YOUR_KEY
   Full enrichment: https://analytics.dugganusa.com/api/v1/search/correlate?q=<indicator>
   Free API key: https://analytics.dugganusa.com/stix/register
 ```
+
+The full-enrichment (correlate) link is key-gated (free key required).
 
 ## Exit codes
 
