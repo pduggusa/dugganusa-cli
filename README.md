@@ -10,9 +10,9 @@ Your terminal and your agent keep their own context; the DugganUSA Feed lends th
 
 - **Supply-chain scanning leveled up.** The corpus now ingests OSV malicious-package feeds for **both npm and PyPI** — named-malicious packages, zero-heuristic, daily — alongside daily GitHub Hunt detections of malware-staging repos and install-time execution signatures. Pipe a lockfile or `--file package.json` and known-bad packages surface next to network IOCs. This is the CI angle: catch a poisoned dependency before it ships.
 - **Four live, no-auth, deploy-durable validation endpoints** now prove feed quality:
-  - **Novelty** — [feed-uniqueness](https://analytics.dugganusa.com/api/v1/feed-uniqueness): ~75%+ of what we publish ThreatFox doesn't have (measured live).
-  - **Timeliness** — [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead): a live ledger of how far ahead of CISA KEV we flagged each exploited CVE — positive leads, same-day, and no-receipt all shown honestly, with receipts.
-  - **Accuracy** — [spamhaus-validation](https://analytics.dugganusa.com/api/v1/spamhaus-validation): Spamhaus independently corroborates our first-hand contributions.
+  - **Novelty** — [feed-uniqueness](https://analytics.dugganusa.com/api/v1/feed-uniqueness): how much of what we publish adds to ThreatFox, which we also carry and credit (measured live).
+  - **Timeliness** — [kev-lead](https://analytics.dugganusa.com/api/v1/kev-lead): when an exploited CVE reached our corpus relative to CISA KEV, including same-day and no-receipt cases.
+  - **Accuracy** — [spamhaus-validation](https://analytics.dugganusa.com/api/v1/spamhaus-validation): Spamhaus independently checks our first-hand contributions.
   - **Liveness** — [feed-efficacy](https://analytics.dugganusa.com/api/v1/feed-efficacy): opt-in consumer reports of when our indicators actually fire on real traffic — proof the feed is operationally live, not just large.
 
 ```bash
@@ -23,11 +23,9 @@ npx dugganusa-cli 185.39.19.176
 npx -y -p dugganusa-cli dugganusa-mcp
 ```
 
-A two-person Minnesota LLC. A Bloom filter for novelty checks. Meilisearch cross-index correlation. A github-hunt cron that runs at 08:15 UTC every day.
+A two-person Minnesota LLC. Most of what is in the corpus comes from other people's good work: abuse.ch, Spamhaus, CISA, OSV and the researchers we cite by name. We join it with our own GitHub hunting and edge sensors, correlate it, and hand it back with the source attached.
 
-That's the stack that named **TeamPCP** 45 days before CISA added LiteLLM CVE-2026-42208 to KEV. That named **Handala** 28 days before they exfiltrated 6 petabytes from Dubai. That named **NGINX-UI** as actively exploited 20 days before the same agency caught up.
-
-This is the CLI that puts the same corpus in your terminal.
+**What it asks of you:** nothing you cannot read. No agent to install, no inbound access, none of your data leaves your machine except the indicators you look up. Keep every tool you already use; this adds a second opinion beside them.
 
 > **Bin rename (since v1.3.0):** the scanner bin was `dugganusa-lookup` in v1.2.0. It is now `dugganusa-cli`. The old `dugganusa-lookup` package is dead — use `dugganusa-cli`. The MCP bin (`dugganusa-mcp`) is unchanged. Update any pinned scripts.
 
@@ -139,7 +137,7 @@ Same corpus, your terminal.
 
 Local STDIO MCP server. Wire it into any MCP client, your AI assistant gets the DugganUSA threat-intel corpus as read-only tools.
 
-This is the MCP we wrote because the ones we audited were dangerous.
+A small MCP server you can read end to end, so adding it to your agent costs you very little trust.
 
 ### Three tools, that's it
 
@@ -181,11 +179,7 @@ Default is off. Turn it on if your environment is anything more than your laptop
 
 ### Why this MCP exists
 
-On April 20, 2026 we published **"Anthropic's MCP Has a Critical RCE Vulnerability. We Don't Use MCP. Here's Why."** ([dugganusa.com](https://www.dugganusa.com/post/anthropic-s-mcp-has-a-critical-rce-vulnerability-we-don-t-use-mcp-here-s-why))
-
-We named the affected vendors three weeks before they hit the headlines: **MCP Inspector, LibreChat, Windsurf, LiteLLM, Langchain-Chatchat, NGINX-UI**. The architectural problem was that MCP trusts the transport — STDIO gives an AI model a pipe to execute commands on the host, and the path from "tool definition" to "command execution" had no gate.
-
-We meant it. We still don't trust other people's MCPs without auditing them first. The coherent answer is to ship the MCP we'd audit:
+A STDIO MCP server runs on your machine with your permissions, so the question to ask of any of them, ours included, is how much you have to trust it. We tried to make the answer "very little":
 
 - Read-only tool surface only — no write, no exec
 - No third-party MCP SDK dependency (every line is in this repo)
@@ -236,21 +230,9 @@ You get signed attestation that the published bytes came from a specific commit 
 
 ---
 
-## Receipts
+## Checking our work
 
-The platform behind this CLI runs left-of-boom on adversary infrastructure:
-
-| Adversary | We named them | Vendor / agency caught up | Days early |
-|---|---|---|---|
-| **TeamPCP** (Trivy / LiteLLM / Telnyx supply chain) | Mar 24, 2026 | CISA KEV adds CVE-2026-42208 May 8 | **45 days** |
-| **NGINX-UI** (actively exploited MCP) | Apr 20, 2026 | CISA KEV adds May 8 | **20 days** |
-| **Lynx ransomware** vs ACN Healthcare | indexed | Microsoft published | **43 days** |
-| **Handala** (Iran/MOIS-aligned) vs Dubai | indexed | Disclosure | **28 days** |
-| **Medtronic** vish chain | flagged | Microsoft published | **39 days** |
-
-Five entries in the quantified ledger as of May 10, 2026. The pattern is not luck. The pattern is the methodology.
-
-Read the math: [dugganusa.com/post/45-days-early-on-litellm-20-days-early-on-nginx-ui-cisa-caught-up-today-1](https://www.dugganusa.com/post/45-days-early-on-litellm-20-days-early-on-nginx-ui-cisa-caught-up-today-1)
+We get things wrong and say so in public: corrections are dated and kept next to the original claim at [dugganusa.com](https://www.dugganusa.com). Every verdict carries the source it came from, so you can check it against that source instead of taking our word. If something here is wrong, open an issue; that is the most useful thing you can send us.
 
 ---
 
