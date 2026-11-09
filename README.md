@@ -239,6 +239,22 @@ You get signed attestation that the published bytes came from a specific commit 
 
 ---
 
+## Published before CISA
+
+Between 2026-10-10 and 2026-11-09, CISA added 33 entries to its Known Exploited Vulnerabilities (KEV) catalog. For 6 CVEs (5 posts) we had already published guidance naming the CVE before CISA listed it. In every case the vendor had disclosed first, so this is a statement about our publishing date relative to CISA's listing. It is not a claim that we detected anything first.
+
+| CVE | Vendor disclosure | Our post | CISA KEV | Days before KEV |
+|---|---|---|---|---|
+| CVE-2026-110447 (Collabora Online / Nextcloud) | fix shipped 2026-09-11; CVE published 2026-10-14 | [2026-10-15](https://www.dugganusa.com/post/nextcloud-servers-were-backdoored-through-their-built-in-office-app-for-34-days-before-an-advisory-e) | 2026-10-23 | 8 |
+| CVE-2026-21589 (Atlassian) | patch 2026-10-05 | [2026-10-08](https://www.dugganusa.com/post/atlassian-cve-2026-21589-leakix-inventory-before-poc-edge-saw-no-exploit) | 2026-10-15 | 7 |
+| CVE-2026-109618, CVE-2026-109619 (PHP) | 2026-10-21 | [2026-10-21](https://www.dugganusa.com/post/php2shell-the-fix-is-out-patch-php-today-and-don-t-wait-for-an-indicator-list-because-there-won) | 2026-10-26 | 5 |
+| CVE-2026-111497 (Brotli, Node.js) | Node.js releases 2026-10-21; CVE published 2026-10-22 | [2026-10-22](https://www.dugganusa.com/post/node-js-fixed-a-brotli-bug-that-can-lead-to-code-execution-if-your-code-fetches-untrusted-urls-pat) | 2026-10-27 | 5 |
+| CVE-2026-123158 (OpenSSH) | CVE published 2026-11-05 | [2026-11-07](https://www.dugganusa.com/post/sshole-cve-2026-123158-exploited) | 2026-11-09 | 2 |
+
+How this was counted: days are whole calendar days, because KEV carries no time of day. Our date is the first post that named the CVE ID as originally published. KEV dates come from CISA's JSON; vendor dates come from NVD or the vendor. Not counted: 20 additions where our post came the same day or later, 4 we did not write about, and 3 where we could not show the CVE ID was in the original text of our post. We have no first-party detection receipt that precedes the vendor disclosure for any of these. Computed 2026-11-09.
+
+---
+
 ## Checking our work
 
 We get things wrong and say so in public: corrections are dated and kept next to the original claim at [dugganusa.com](https://www.dugganusa.com). Every verdict carries the source it came from, so you can check it against that source instead of taking our word. If something here is wrong, open an issue; that is the most useful thing you can send us.
